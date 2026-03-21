@@ -692,14 +692,15 @@ def health():
 # ─── ENTRY POINT ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    # Render imposta automaticamente RENDER=true nei suoi ambienti.
-    # In quel caso il Background Worker gira senza Flask (nessuna porta pubblica disponibile).
-    if os.environ.get("RENDER"):
-        logger.info("Ambiente Render rilevato — avvio bot senza Flask")
-        bot_loop()
-    else:
-        port = int(os.environ.get("BOT_PORT", 10000))
-        bot_thread = threading.Thread(target=bot_loop, daemon=True)
-        bot_thread.start()
-        logger.info(f"Flask keep-alive server in ascolto su porta {port}")
-        app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
+    # Avvia sempre il bot in un thread separato, indipendentemente dall'ambiente
+    bot_thread = threading.Thread(target=bot_loop, daemon=True)
+    bot_thread.start()
+    
+    # Render inietta automaticamente la variabile 'PORT'. 
+    # Usiamo 10000 come fallback solo per i test in locale.
+    port = int(os.environ.get("PORT", 10000))
+    
+    logger.info(f"Flask keep-alive server in ascolto su porta {port}")
+    
+    # Avvia Flask sull'host 0.0.0.0 (fondamentale per Render)
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
