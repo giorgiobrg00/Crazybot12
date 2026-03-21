@@ -698,7 +698,7 @@ if __name__ == "__main__":
         logger.info("Ambiente Render rilevato — avvio bot senza Flask")
         bot_loop()
     else:
-        port = int(os.environ.get("BOT_PORT", 5000))
+        port = int(os.environ.get("BOT_PORT", 10000))
         bot_thread = threading.Thread(target=bot_loop, daemon=True)
         bot_thread.start()
         logger.info(f"Flask keep-alive server in ascolto su porta {port}")
